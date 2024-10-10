@@ -1,7 +1,7 @@
 from .wukong import *
 from decimal import Decimal
 from datetime import datetime
-from typing import List, Optional, Self
+import polars as pl
 
 
 BACKTEST = Mode.Backtest

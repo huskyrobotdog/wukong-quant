@@ -9,6 +9,7 @@ from wukong import *
 # 初始化
 ########################################################################################
 def on_init():
+    print(pl.DataFrame({"data": [1, 2, 3]}))
     print(account_cash())
     print(trade_time())
     print("on_init")

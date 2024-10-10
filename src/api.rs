@@ -5,31 +5,31 @@ use crate::{
 };
 use anyhow::Result;
 use chrono::{DateTime, Utc};
-use pyo3::{pyfunction, types::PyTuple, Bound, Python};
+use pyo3::{prelude::*, types::PyTuple};
 use rust_decimal::Decimal;
 
 #[pyfunction]
 #[pyo3(signature = (*args))]
 pub fn debug(args: &Bound<'_, PyTuple>) {
-  tracing::debug!("{:?}", args);
+  tracing::debug!("{}", args.iter().map(|arg| arg.to_string()).collect::<Vec<String>>().join(" "));
 }
 
 #[pyfunction]
 #[pyo3(signature = (*args))]
 pub fn info(args: &Bound<'_, PyTuple>) {
-  tracing::info!("{:?}", args);
+  tracing::info!("{}", args.iter().map(|arg| arg.to_string()).collect::<Vec<String>>().join(" "));
 }
 
 #[pyfunction]
 #[pyo3(signature = (*args))]
 pub fn warn(args: &Bound<'_, PyTuple>) {
-  tracing::warn!("{:?}", args);
+  tracing::warn!("{}", args.iter().map(|arg| arg.to_string()).collect::<Vec<String>>().join(" "));
 }
 
 #[pyfunction]
 #[pyo3(signature = (*args))]
 pub fn error(args: &Bound<'_, PyTuple>) {
-  tracing::error!("{:?}", args);
+  tracing::error!("{}", args.iter().map(|arg| arg.to_string()).collect::<Vec<String>>().join(" "));
 }
 
 #[pyfunction]
