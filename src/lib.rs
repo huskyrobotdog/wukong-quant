@@ -15,6 +15,11 @@ fn wukong(m: &Bound<'_, PyModule>) -> PyResult<()> {
   m.add_class::<types::Side>()?;
   m.add_class::<types::TimeFrame>()?;
   m.add_class::<types::OrderStatus>()?;
+  m.add_function(wrap_pyfunction!(api::debug, m)?)?;
+  m.add_function(wrap_pyfunction!(api::info, m)?)?;
+  m.add_function(wrap_pyfunction!(api::warn, m)?)?;
+  m.add_function(wrap_pyfunction!(api::error, m)?)?;
+  m.add_function(wrap_pyfunction!(api::print, m)?)?;
   m.add_function(wrap_pyfunction!(api::str_to_date, m)?)?;
   m.add_function(wrap_pyfunction!(api::ms_to_date, m)?)?;
   m.add_function(wrap_pyfunction!(api::now_ms, m)?)?;

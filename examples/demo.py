@@ -9,6 +9,8 @@ from wukong import *
 # 初始化
 ########################################################################################
 def on_init():
+    print(account_cash())
+    print(trade_time())
     print("on_init")
 
 

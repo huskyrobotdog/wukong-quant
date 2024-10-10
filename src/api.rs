@@ -5,8 +5,38 @@ use crate::{
 };
 use anyhow::Result;
 use chrono::{DateTime, Utc};
-use pyo3::{pyfunction, Python};
+use pyo3::{pyfunction, types::PyTuple, Bound, Python};
 use rust_decimal::Decimal;
+
+#[pyfunction]
+#[pyo3(signature = (*args))]
+pub fn debug(args: &Bound<'_, PyTuple>) {
+  tracing::debug!("{:?}", args);
+}
+
+#[pyfunction]
+#[pyo3(signature = (*args))]
+pub fn info(args: &Bound<'_, PyTuple>) {
+  tracing::info!("{:?}", args);
+}
+
+#[pyfunction]
+#[pyo3(signature = (*args))]
+pub fn warn(args: &Bound<'_, PyTuple>) {
+  tracing::warn!("{:?}", args);
+}
+
+#[pyfunction]
+#[pyo3(signature = (*args))]
+pub fn error(args: &Bound<'_, PyTuple>) {
+  tracing::error!("{:?}", args);
+}
+
+#[pyfunction]
+#[pyo3(signature = (*args))]
+pub fn print(args: &Bound<'_, PyTuple>) {
+  info(args);
+}
 
 #[pyfunction]
 #[pyo3(signature = (s))]

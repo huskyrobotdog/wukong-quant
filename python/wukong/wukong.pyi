@@ -216,6 +216,31 @@ class Order:
     状态
     """
 
+def debug(*args):
+    """
+    输出调试消息
+    """
+
+def info(*args):
+    """
+    输出信息消息
+    """
+
+def warn(*args):
+    """
+    输出警告消息
+    """
+
+def error(*args):
+    """
+    输出错误消息
+    """
+
+def print(*args):
+    """
+    输出消息
+    """
+
 def str_to_date(s: str) -> datetime:
     """
     字符串转日期 `UTC+0`
