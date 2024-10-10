@@ -17,7 +17,6 @@ pub enum Environment {
   ShowBanner,
 }
 
-#[allow(unused)]
 impl Environment {
   pub fn value(&self) -> Option<String> {
     std::env::var(self.to_string()).ok()

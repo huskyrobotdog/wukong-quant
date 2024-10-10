@@ -35,9 +35,9 @@ pub trait Database: Send + Sync {
     I: Iterator<Item = (K, V)>;
 }
 
-pub struct DBProvider(Arc<RwLock<DB>>);
+pub struct DatabaseProvider(Arc<RwLock<DB>>);
 
-impl Deref for DBProvider {
+impl Deref for DatabaseProvider {
   type Target = Arc<RwLock<DB>>;
 
   fn deref(&self) -> &Self::Target {
@@ -45,13 +45,13 @@ impl Deref for DBProvider {
   }
 }
 
-impl DerefMut for DBProvider {
+impl DerefMut for DatabaseProvider {
   fn deref_mut(&mut self) -> &mut Self::Target {
     &mut self.0
   }
 }
 
-impl Database for DBProvider {
+impl Database for DatabaseProvider {
   fn get<T, K, V>(&self, table: T, key: K) -> Result<Option<V>>
   where
     T: AsRef<str>,
@@ -145,7 +145,7 @@ impl Database for DBProvider {
   }
 }
 
-impl DBProvider {
+impl DatabaseProvider {
   fn init_table<T>(&self, table: T) -> Result<()>
   where
     T: AsRef<str>,
@@ -158,13 +158,13 @@ impl DBProvider {
   }
 }
 
-pub fn open(mode: Mode) -> Result<DBProvider> {
+pub fn open(mode: Mode) -> Result<DatabaseProvider> {
   let path = crate::helpers::path::cache()?.join(mode.as_ref());
   let mut opts = Options::default();
   opts.create_if_missing(true);
   let cfs = if path.exists() { DB::list_cf(&opts, &path)? } else { vec![] };
   let db = DB::open_cf(&opts, path, cfs)?;
-  Ok(DBProvider(Arc::new(RwLock::new(db))))
+  Ok(DatabaseProvider(Arc::new(RwLock::new(db))))
 }
 
 #[cfg(test)]
