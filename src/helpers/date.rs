@@ -1,6 +1,5 @@
 use anyhow::{anyhow, Result};
 use chrono::{DateTime, TimeZone, Utc};
-use pyo3::pyfunction;
 
 /// 字符串转日期 `UTC+0`
 /// ---
@@ -12,8 +11,6 @@ use pyo3::pyfunction;
 /// - 格式6 : 20000102030405
 /// ---
 /// 其他格式均返回错误
-#[pyfunction]
-#[pyo3(signature = (s))]
 pub fn str_to_date(s: &str) -> Result<DateTime<Utc>> {
   let t = if s.len() == 4 {
     DateTime::parse_from_str(&format!("{s}0101000000+00:00"), "%Y%m%d%H%M%S%z")?.to_utc()
@@ -34,15 +31,11 @@ pub fn str_to_date(s: &str) -> Result<DateTime<Utc>> {
 }
 
 /// 毫秒转日期 `UTC+0`
-#[pyfunction]
-#[pyo3(signature = (ts))]
 pub fn ms_to_date(ts: i64) -> Result<DateTime<Utc>> {
   Utc.timestamp_millis_opt(ts).single().ok_or(anyhow!("时间戳转换失败"))
 }
 
 /// 当前毫秒时间戳
-#[pyfunction]
-#[pyo3(signature = ())]
 pub fn now_ms() -> i64 {
   Utc::now().timestamp_millis()
 }
