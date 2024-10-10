@@ -33,34 +33,56 @@ class Side(Enum):
     """做空"""
 
 class TimeFrame(Enum):
-    """K线周期"""
+    """时间周期"""
 
     Minute = auto()
+    """1分钟"""
     Minute3 = auto()
+    """3分钟"""
     Minute5 = auto()
+    """5分钟"""
     Minute15 = auto()
+    """15分钟"""
     Minute30 = auto()
+    """30分钟"""
     Hour = auto()
+    """1小时"""
     Hour2 = auto()
+    """2小时"""
     Hour4 = auto()
+    """4小时"""
     Hour6 = auto()
+    """6小时"""
     Hour8 = auto()
+    """8小时"""
     Hour12 = auto()
+    """12小时"""
     Day = auto()
+    """1天"""
     Day3 = auto()
+    """3天"""
     Week = auto()
+    """1周"""
     Month = auto()
+    """1月"""
 
 class OrderStatus(Enum):
     """订单状态"""
 
     Created = auto()
+    """创建"""
     Submited = auto()
+    """已提交"""
     Pending = auto()
+    """挂单中"""
     Partial = auto()
+    """部分成交"""
     Completed = auto()
+    """完全成交"""
     Rejected = auto()
+    """被拒绝"""
     Canceled = auto()
+    """已取消"""
 
 class Order:
     """订单"""
