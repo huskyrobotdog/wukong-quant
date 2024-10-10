@@ -1,104 +1,14 @@
-use crate::types::{OrderStatus, Side, Type};
+use std::collections::HashMap;
+
+use crate::{
+  helpers::database::DatabaseProvider,
+  types::{OrderStatus, Side, Type},
+};
 use anyhow::{bail, Result};
 use bincode::{Decode, Encode};
 use chrono::prelude::*;
 use pyo3::prelude::*;
 use rust_decimal::Decimal;
-
-/// 账户
-#[derive(Debug, Default, Clone)]
-pub struct Account {
-  /// 资金
-  pub cash: Decimal,
-  /// 可用资金
-  pub avail_cash: Decimal,
-  /// 保证金
-  pub margin: Decimal,
-  /// 仓位未实现盈亏
-  pub pos_pnl: Decimal,
-}
-
-/// 仓位
-#[derive(Debug, Clone)]
-pub struct Position {
-  /// 交易对
-  pub symbol: String,
-  /// 方向
-  pub side: Side,
-  /// 杠杆倍数
-  pub leverage: Decimal,
-  /// 标记价格
-  pub mark_price: Decimal,
-  /// 持仓
-  pub size: Decimal,
-  /// 可用持仓
-  pub avail_size: Decimal,
-  /// 均价
-  pub price: Decimal,
-  /// 保证金
-  pub margin: Decimal,
-  /// 未实现盈亏
-  pub pnl: Decimal,
-}
-
-/// 订单
-#[pyclass(get_all)]
-#[derive(Debug, Clone)]
-pub struct Order {
-  /// 交易对
-  pub symbol: String,
-  /// 订单ID
-  pub id: String,
-  /// 类型
-  pub r#type: Type,
-  /// 方向
-  pub side: Side,
-  /// 减仓
-  pub reduce: bool,
-  /// 杠杆倍数
-  pub leverage: Decimal,
-  /// 数量
-  pub size: Decimal,
-  /// 价格
-  pub price: Decimal,
-  /// 下单时间
-  pub time: DateTime<Utc>,
-  /// 保证金
-  pub margin: Decimal,
-  /// 成交数量
-  pub deal_size: Decimal,
-  /// 成交均价
-  pub deal_price: Decimal,
-  /// 成交手续费
-  pub deal_fee: Decimal,
-  /// 状态
-  pub status: OrderStatus,
-}
-
-/// K线
-#[derive(Debug, Clone, Encode, Decode)]
-pub struct Candle {
-  /// 开盘时间
-  pub time: i64,
-  /// 开盘价
-  pub open: f64,
-  /// 最高价
-  pub high: f64,
-  /// 最低价
-  pub low: f64,
-  /// 收盘价
-  pub close: f64,
-  /// 数量
-  pub volume: f64,
-  /// 金额
-  pub amount: f64,
-  /// 吃单数量
-  pub taker_volume: f64,
-  /// 吃单金额
-  pub taker_amount: f64,
-  /// 成交笔数
-  pub trades: i64,
-}
 
 /// 策略事件
 pub struct StrategyEvent {
@@ -257,4 +167,117 @@ impl StrategyEvent {
     }
     Ok(())
   }
+}
+
+/// K线
+#[derive(Debug, Clone, Encode, Decode)]
+pub struct Candle {
+  /// 开盘时间
+  pub time: i64,
+  /// 开盘价
+  pub open: f64,
+  /// 最高价
+  pub high: f64,
+  /// 最低价
+  pub low: f64,
+  /// 收盘价
+  pub close: f64,
+  /// 数量
+  pub volume: f64,
+  /// 金额
+  pub amount: f64,
+  /// 吃单数量
+  pub taker_volume: f64,
+  /// 吃单金额
+  pub taker_amount: f64,
+  /// 成交笔数
+  pub trades: i64,
+}
+
+/// 账户
+#[derive(Debug, Default, Clone)]
+pub struct Account {
+  /// 资金
+  pub cash: Decimal,
+  /// 可用资金
+  pub avail_cash: Decimal,
+  /// 保证金
+  pub margin: Decimal,
+  /// 未实现盈亏
+  pub pnl: Decimal,
+}
+
+/// 仓位
+#[derive(Debug, Clone)]
+pub struct Position {
+  /// 交易对
+  pub symbol: String,
+  /// 方向
+  pub side: Side,
+  /// 杠杆倍数
+  pub leverage: Decimal,
+  /// 标记价格
+  pub mark_price: Decimal,
+  /// 持仓
+  pub size: Decimal,
+  /// 可用持仓
+  pub avail_size: Decimal,
+  /// 均价
+  pub price: Decimal,
+  /// 保证金
+  pub margin: Decimal,
+  /// 未实现盈亏
+  pub pnl: Decimal,
+}
+
+/// 订单
+#[pyclass(get_all)]
+#[derive(Debug, Clone)]
+pub struct Order {
+  /// 交易对
+  pub symbol: String,
+  /// 订单ID
+  pub id: String,
+  /// 类型
+  pub r#type: Type,
+  /// 方向
+  pub side: Side,
+  /// 减仓
+  pub reduce: bool,
+  /// 杠杆倍数
+  pub leverage: Decimal,
+  /// 数量
+  pub size: Decimal,
+  /// 价格
+  pub price: Decimal,
+  /// 下单时间
+  pub time: DateTime<Utc>,
+  /// 保证金
+  pub margin: Decimal,
+  /// 成交数量
+  pub deal_size: Decimal,
+  /// 成交均价
+  pub deal_price: Decimal,
+  /// 成交手续费
+  pub deal_fee: Decimal,
+  /// 状态
+  pub status: OrderStatus,
+}
+
+/// 上下文
+pub struct Context {
+  /// 数据库
+  pub db: DatabaseProvider,
+  /// 是否运行中
+  pub running: bool,
+  /// 交易时间
+  pub trade_time: DateTime<Utc>,
+  /// 基准
+  pub benchmark: String,
+  /// 账户
+  pub account: Account,
+  /// 仓位
+  pub positions: HashMap<String, Position>,
+  /// 订单
+  pub orders: HashMap<String, Order>,
 }
