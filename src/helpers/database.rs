@@ -1,3 +1,4 @@
+use crate::types::Mode;
 use anyhow::{anyhow, Result};
 use parking_lot::RwLock;
 use rocksdb::{Direction, IteratorMode, Options, WriteBatch, DB};
@@ -5,8 +6,6 @@ use std::{
   ops::{Deref, DerefMut},
   sync::Arc,
 };
-
-use crate::types::Mode;
 
 pub trait Database: Send + Sync {
   fn get<T, K, V>(&self, table: T, key: K) -> Result<Option<V>>
@@ -163,7 +162,18 @@ pub fn open(mode: Mode) -> Result<DBProvider> {
   let path = crate::helpers::path::cache()?.join(mode.as_ref());
   let mut opts = Options::default();
   opts.create_if_missing(true);
-  let cfs = DB::list_cf(&opts, &path)?;
+  let cfs = if path.exists() { DB::list_cf(&opts, &path)? } else { vec![] };
   let db = DB::open_cf(&opts, path, cfs)?;
   Ok(DBProvider(Arc::new(RwLock::new(db))))
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn tests() -> Result<()> {
+    open(Mode::Backtest)?;
+    Ok(())
+  }
 }
