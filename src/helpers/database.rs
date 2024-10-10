@@ -1,24 +1,31 @@
-use crate::{models::Candle, types::TimeFrame};
 use anyhow::Result;
 
 pub trait Database: Send + Sync {
-  /// 获取K线
-  fn get_candle(&self, symbol: &str, interval: TimeFrame, time: i64) -> Result<Option<Candle>>;
-  /// 获取K线列表
-  fn get_candles(
-    &self,
-    symbol: &str,
-    interval: TimeFrame,
-    begin: i64,
-    end: i64,
-  ) -> Result<Vec<Candle>>;
-  /// 保存K线
-  fn save_candles(&self, symbol: &str, interval: TimeFrame, candles: &Vec<Candle>) -> Result<()>;
-  /// 获取回测K线配置
-  fn get_backtest_candle_config(&self, symbol: &str, interval: TimeFrame) -> Result<Option<i64>>;
-  /// 保存回测K线配置
-  fn save_backtest_candle_config(&self, symbol: &str, interval: TimeFrame, time: i64)
-    -> Result<()>;
+  fn get<T, K, V>(&self, table: T, key: K) -> Result<Option<V>>
+  where
+    T: AsRef<str>,
+    K: bincode::Encode,
+    V: bincode::Decode;
+
+  fn get_range<T, K, V, I>(&self, table: T, begin: K, end: K) -> Result<I>
+  where
+    T: AsRef<str>,
+    K: bincode::Encode,
+    V: bincode::Decode,
+    I: Iterator<Item = (K, V)>;
+
+  fn set<T, K, V>(&self, table: T, key: K, val: V) -> Result<()>
+  where
+    T: AsRef<str>,
+    K: bincode::Encode,
+    V: bincode::Decode;
+
+  fn batch_set<T, K, V, I>(&self, table: T, iter: I) -> Result<()>
+  where
+    T: AsRef<str>,
+    K: bincode::Encode,
+    V: bincode::Decode,
+    I: Iterator<Item = (K, V)>;
 }
 
 // /// 打开数据库
