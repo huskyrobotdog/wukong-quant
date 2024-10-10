@@ -3,10 +3,42 @@ name = "wukong-quant"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[profile.release]
+codegen-units = 1
+debug = false
+lto = true
+opt-level = "z"
+panic = 'abort'
+
 [lib]
-name = "wukong_quant"
+name = "wukong"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.22.0"
+pyo3 = { version = "0.22.0", features = ["full"] }
+tokio = { version = "1.38.0", features = ["full"] }
+anyhow = { version = "1.0.86", features = ["backtrace"] }
+tracing = { version = "0.1.40" }
+tracing-subscriber = { version = "0.3.18", features = ["local-time"] }
+chrono = { version = "0.4.38" }
+rust_decimal = { version = "1.35.0", features = ["borsh"] }
+rand = { version = "0.8.5" }
+num_cpus = { version = "1.16.0" }
+homedir = { version = "0.3.3" }
+strum = { version = "0.26.3", features = ["derive"] }
+time = { version = "0.3.36", features = ["macros"] }
+once_cell = { version = "1.19.0" }
+uuid = { version = "1.10.0", features = [
+    "v4",
+    "fast-rng",
+    "macro-diagnostics",
+] }
+parking_lot = { version = "0.12.3" }
+rayon = { version = "1.10.0" }
+futures = { version = "0.3.30" }
+binance-rs-async = { version = "1.3.3", default-features = false, features = [
+    "rustls-tls",
+    "futures_api",
+] }
+redb = { version = "2.1.3" }
+bincode = { version = "2.0.0-rc.3" }
