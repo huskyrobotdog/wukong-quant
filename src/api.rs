@@ -35,7 +35,7 @@ pub fn error(args: &Bound<'_, PyTuple>) {
 #[pyfunction]
 #[pyo3(signature = (*args))]
 pub fn print(args: &Bound<'_, PyTuple>) {
-  info(args);
+  debug(args);
 }
 
 #[pyfunction]
