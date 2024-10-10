@@ -20,9 +20,9 @@ class Type(Enum):
     """交易类型"""
 
     Limit = auto()
-    """限价"""
+    """限价交易"""
     Market = auto()
-    """市价"""
+    """市价交易"""
 
 class Side(Enum):
     """交易方向"""
