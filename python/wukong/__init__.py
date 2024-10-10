@@ -44,3 +44,7 @@ PARTIAL = OrderStatus.Partial
 COMPLETED = OrderStatus.Completed
 REJECTED = OrderStatus.Rejected
 CANCELED = OrderStatus.Canceled
+
+
+REDUCE = True
+"""减仓"""
