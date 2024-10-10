@@ -7,37 +7,9 @@ use std::{
   sync::Arc,
 };
 
-pub trait Database: Send + Sync {
-  fn get<T, K, V>(&self, table: T, key: K) -> Result<Option<V>>
-  where
-    T: AsRef<str>,
-    K: bincode::Encode,
-    V: bincode::Decode;
+pub struct Database(Arc<RwLock<DB>>);
 
-  fn get_range<T, K, V1, V2, I>(&self, table: T, begin: K, end: K) -> Result<Vec<(V1, V2)>>
-  where
-    T: AsRef<str>,
-    K: bincode::Encode,
-    V1: bincode::Decode,
-    V2: bincode::Decode;
-
-  fn set<T, K, V>(&self, table: T, key: K, val: V) -> Result<()>
-  where
-    T: AsRef<str>,
-    K: bincode::Encode,
-    V: bincode::Encode;
-
-  fn batch_set<T, K, V, I>(&self, table: T, iter: I) -> Result<()>
-  where
-    T: AsRef<str>,
-    K: bincode::Encode,
-    V: bincode::Encode,
-    I: Iterator<Item = (K, V)>;
-}
-
-pub struct DatabaseProvider(Arc<RwLock<DB>>);
-
-impl Deref for DatabaseProvider {
+impl Deref for Database {
   type Target = Arc<RwLock<DB>>;
 
   fn deref(&self) -> &Self::Target {
@@ -45,14 +17,25 @@ impl Deref for DatabaseProvider {
   }
 }
 
-impl DerefMut for DatabaseProvider {
+impl DerefMut for Database {
   fn deref_mut(&mut self) -> &mut Self::Target {
     &mut self.0
   }
 }
 
-impl Database for DatabaseProvider {
-  fn get<T, K, V>(&self, table: T, key: K) -> Result<Option<V>>
+impl Database {
+  fn init_table<T>(&self, table: T) -> Result<()>
+  where
+    T: AsRef<str>,
+  {
+    let mut db = self.write();
+    if db.cf_handle(table.as_ref()).is_none() {
+      db.create_cf(table.as_ref(), &Options::default())?;
+    }
+    Ok(())
+  }
+
+  pub fn get<T, K, V>(&self, table: T, key: K) -> Result<Option<V>>
   where
     T: AsRef<str>,
     K: bincode::Encode,
@@ -72,7 +55,7 @@ impl Database for DatabaseProvider {
     }
   }
 
-  fn get_range<T, K, V1, V2, I>(&self, table: T, begin: K, end: K) -> Result<Vec<(V1, V2)>>
+  pub fn get_range<T, K, V1, V2, I>(&self, table: T, begin: K, end: K) -> Result<Vec<(V1, V2)>>
   where
     T: AsRef<str>,
     K: bincode::Encode,
@@ -103,7 +86,7 @@ impl Database for DatabaseProvider {
     Ok(items)
   }
 
-  fn set<T, K, V>(&self, table: T, key: K, val: V) -> Result<()>
+  pub fn set<T, K, V>(&self, table: T, key: K, val: V) -> Result<()>
   where
     T: AsRef<str>,
     K: bincode::Encode,
@@ -120,7 +103,7 @@ impl Database for DatabaseProvider {
     Ok(())
   }
 
-  fn batch_set<T, K, V, I>(&self, table: T, iter: I) -> Result<()>
+  pub fn batch_set<T, K, V, I>(&self, table: T, iter: I) -> Result<()>
   where
     T: AsRef<str>,
     K: bincode::Encode,
@@ -145,26 +128,13 @@ impl Database for DatabaseProvider {
   }
 }
 
-impl DatabaseProvider {
-  fn init_table<T>(&self, table: T) -> Result<()>
-  where
-    T: AsRef<str>,
-  {
-    let mut db = self.write();
-    if db.cf_handle(table.as_ref()).is_none() {
-      db.create_cf(table.as_ref(), &Options::default())?;
-    }
-    Ok(())
-  }
-}
-
-pub fn open(mode: Mode) -> Result<DatabaseProvider> {
+pub fn open(mode: Mode) -> Result<Database> {
   let path = crate::helpers::path::cache()?.join(mode.as_ref());
   let mut opts = Options::default();
   opts.create_if_missing(true);
   let cfs = if path.exists() { DB::list_cf(&opts, &path)? } else { vec![] };
   let db = DB::open_cf(&opts, path, cfs)?;
-  Ok(DatabaseProvider(Arc::new(RwLock::new(db))))
+  Ok(Database(Arc::new(RwLock::new(db))))
 }
 
 #[cfg(test)]

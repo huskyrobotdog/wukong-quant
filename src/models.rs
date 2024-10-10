@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-  helpers::database::DatabaseProvider,
+  helpers::database::Database,
   types::{OrderStatus, Side, Type},
 };
 use anyhow::{bail, Result};
@@ -10,8 +10,8 @@ use chrono::prelude::*;
 use pyo3::prelude::*;
 use rust_decimal::Decimal;
 
-/// 策略事件
-pub struct StrategyEvent {
+/// 策略回调
+pub struct StrategyCallback {
   /// 初始化
   on_init: Option<Py<PyAny>>,
   /// 每日开始
@@ -32,7 +32,7 @@ pub struct StrategyEvent {
   on_stop: Option<Py<PyAny>>,
 }
 
-impl StrategyEvent {
+impl StrategyCallback {
   pub fn new(strategy: &str) -> Result<Self> {
     Python::with_gil(|py| {
       let code = std::fs::read_to_string(strategy)?;
@@ -65,7 +65,7 @@ impl StrategyEvent {
   }
 }
 
-impl StrategyEvent {
+impl StrategyCallback {
   pub fn on_init(&self) -> Result<()> {
     if let Some(call) = &self.on_init {
       Python::with_gil(|py| {
@@ -267,7 +267,7 @@ pub struct Order {
 /// 上下文
 pub struct Context {
   /// 数据库
-  pub db: DatabaseProvider,
+  pub db: Database,
   /// 是否运行中
   pub running: bool,
   /// 交易时间
