@@ -6,6 +6,8 @@ use std::{
   sync::Arc,
 };
 
+use crate::types::Mode;
+
 pub trait Database: Send + Sync {
   fn get<T, K, V>(&self, table: T, key: K) -> Result<Option<V>>
   where
@@ -34,7 +36,7 @@ pub trait Database: Send + Sync {
     I: Iterator<Item = (K, V)>;
 }
 
-struct DBProvider(Arc<RwLock<DB>>);
+pub struct DBProvider(Arc<RwLock<DB>>);
 
 impl Deref for DBProvider {
   type Target = Arc<RwLock<DB>>;
@@ -155,4 +157,13 @@ impl DBProvider {
     }
     Ok(())
   }
+}
+
+pub fn open(mode: Mode) -> Result<DBProvider> {
+  let path = crate::helpers::path::cache()?.join(mode.as_ref());
+  let mut opts = Options::default();
+  opts.create_if_missing(true);
+  let cfs = DB::list_cf(&opts, &path)?;
+  let db = DB::open_cf(&opts, path, cfs)?;
+  Ok(DBProvider(Arc::new(RwLock::new(db))))
 }

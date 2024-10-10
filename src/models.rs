@@ -110,14 +110,14 @@ pub struct StrategyEvent {
   on_hour_begin: Option<Py<PyAny>>,
   /// 每分钟开始
   on_minute_begin: Option<Py<PyAny>>,
-  /// tick
-  on_tick: Option<Py<PyAny>>,
   /// 每分钟结束
   on_minute_end: Option<Py<PyAny>>,
   /// 每小时结束
   on_hour_end: Option<Py<PyAny>>,
   /// 每天结束
   on_day_end: Option<Py<PyAny>>,
+  /// tick
+  on_tick: Option<Py<PyAny>>,
   /// 停止运行
   on_stop: Option<Py<PyAny>>,
 }
@@ -133,14 +133,14 @@ impl StrategyEvent {
         format!("_{}", crate::helpers::id::gen()).as_str(),
       )?;
       anyhow::Ok(Self {
-        on_init: Self::get_call(&module, "on_initialize")?,
+        on_init: Self::get_call(&module, "on_init")?,
         on_day_begin: Self::get_call(&module, "on_day_begin")?,
         on_hour_begin: Self::get_call(&module, "on_hour_begin")?,
         on_minute_begin: Self::get_call(&module, "on_minute_begin")?,
-        on_tick: Self::get_call(&module, "on_tick")?,
         on_minute_end: Self::get_call(&module, "on_minute_end")?,
         on_hour_end: Self::get_call(&module, "on_hour_end")?,
         on_day_end: Self::get_call(&module, "on_day_end")?,
+        on_tick: Self::get_call(&module, "on_tick")?,
         on_stop: Self::get_call(&module, "on_stop")?,
       })
     })
@@ -201,17 +201,7 @@ impl StrategyEvent {
     }
     Ok(())
   }
-  pub fn on_tick(&self) -> Result<()> {
-    if let Some(call) = &self.on_tick {
-      Python::with_gil(|py| {
-        let call = call.bind(py);
-        call.call0()?;
-        anyhow::Ok(())
-      })?;
-      return Ok(());
-    }
-    Ok(())
-  }
+
   pub fn on_minute_end(&self) -> Result<()> {
     if let Some(call) = &self.on_minute_end {
       Python::with_gil(|py| {
@@ -245,7 +235,17 @@ impl StrategyEvent {
     }
     Ok(())
   }
-
+  pub fn on_tick(&self) -> Result<()> {
+    if let Some(call) = &self.on_tick {
+      Python::with_gil(|py| {
+        let call = call.bind(py);
+        call.call0()?;
+        anyhow::Ok(())
+      })?;
+      return Ok(());
+    }
+    Ok(())
+  }
   pub fn on_stop(&self) -> Result<()> {
     if let Some(call) = &self.on_stop {
       Python::with_gil(|py| {
