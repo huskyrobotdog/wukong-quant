@@ -1,7 +1,11 @@
-use crate::{global, models::Order, types::OrderStatus};
+use crate::{
+  global,
+  models::Order,
+  types::{Mode, OrderStatus},
+};
 use anyhow::Result;
 use chrono::{DateTime, Utc};
-use pyo3::pyfunction;
+use pyo3::{pyfunction, Python};
 use rust_decimal::Decimal;
 
 #[pyfunction]
@@ -198,4 +202,14 @@ pub fn benchmark() -> String {
 #[pyo3(signature = ())]
 pub fn symbols() -> Vec<String> {
   global::engine().lock().pairs.keys().cloned().collect()
+}
+
+#[pyfunction]
+#[pyo3(signature = (mode, strategy))]
+pub fn run(py: Python, mode: Mode, strategy: &str) -> Result<()> {
+  py.allow_threads(|| {
+    crate::engine::start(mode, strategy)?;
+    anyhow::Ok(())
+  })?;
+  Ok(())
 }

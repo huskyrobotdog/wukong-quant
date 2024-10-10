@@ -43,5 +43,6 @@ fn wukong(m: &Bound<'_, PyModule>) -> PyResult<()> {
   m.add_function(wrap_pyfunction!(api::trade_time, m)?)?;
   m.add_function(wrap_pyfunction!(api::benchmark, m)?)?;
   m.add_function(wrap_pyfunction!(api::symbols, m)?)?;
+  m.add_function(wrap_pyfunction!(api::run, m)?)?;
   Ok(())
 }

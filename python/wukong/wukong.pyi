@@ -364,3 +364,8 @@ def symbols() -> List[str]:
     """
     所有交易对
     """
+
+def run(mode: Mode, strategy: str):
+    """
+    运行策略
+    """
