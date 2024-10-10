@@ -126,8 +126,12 @@ impl StrategyEvent {
   pub fn new(strategy: &str) -> Result<Self> {
     Python::with_gil(|py| {
       let code = std::fs::read_to_string(strategy)?;
-      let module =
-        PyModule::from_code_bound(py, &code, strategy, format!("_{}", helpers::gen_id()).as_str())?;
+      let module = PyModule::from_code_bound(
+        py,
+        &code,
+        strategy,
+        format!("_{}", crate::helpers::id::gen()).as_str(),
+      )?;
       anyhow::Ok(Self {
         on_init: Self::get_call(&module, "on_initialize")?,
         on_day_begin: Self::get_call(&module, "on_day_begin")?,
