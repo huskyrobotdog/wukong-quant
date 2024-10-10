@@ -1,5 +1,5 @@
 use crate::{
-  global::{set_engine, set_strategy_callback},
+  global::{set_engine, set_strategy_callback, strategy_callback},
   helpers::constants::{Environment, BANNER},
   models::{Context, StrategyCallback},
   types::Mode,
@@ -54,6 +54,12 @@ pub fn start(mode: Mode, strategy: &str) -> Result<()> {
 
   // 策略回调
   set_strategy_callback(Arc::new(StrategyCallback::new(strategy)?))?;
+
+  // 策略初始化
+  strategy_callback().on_init()?;
+
+  // 策略停止运行
+  strategy_callback().on_stop()?;
 
   Ok(())
 }
