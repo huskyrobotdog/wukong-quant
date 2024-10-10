@@ -138,32 +138,42 @@ pub fn pair_order(symbol: &str, id: &str) -> Option<Order> {
 
 #[pyfunction]
 #[pyo3(signature = (symbol))]
-pub fn pair_open_orders(symbol: &str) -> Option<Vec<Order>> {
-  global::engine().lock().pairs.get(symbol).map(|v| {
-    v.orders
-      .iter()
-      .filter_map(|(_, o)| {
-        if matches!(
-          o.status,
-          OrderStatus::Created |
-            OrderStatus::Submited |
-            OrderStatus::Pending |
-            OrderStatus::Partial
-        ) {
-          Some(o)
-        } else {
-          None
-        }
-      })
-      .cloned()
-      .collect()
-  })
+pub fn pair_open_orders(symbol: &str) -> Vec<Order> {
+  global::engine()
+    .lock()
+    .pairs
+    .get(symbol)
+    .map(|v| {
+      v.orders
+        .iter()
+        .filter_map(|(_, o)| {
+          if matches!(
+            o.status,
+            OrderStatus::Created |
+              OrderStatus::Submited |
+              OrderStatus::Pending |
+              OrderStatus::Partial
+          ) {
+            Some(o)
+          } else {
+            None
+          }
+        })
+        .cloned()
+        .collect()
+    })
+    .unwrap_or_default()
 }
 
 #[pyfunction]
 #[pyo3(signature = (symbol))]
-pub fn pair_order_ids(symbol: &str) -> Option<Vec<String>> {
-  global::engine().lock().pairs.get(symbol).map(|v| v.orders.keys().cloned().collect())
+pub fn pair_order_ids(symbol: &str) -> Vec<String> {
+  global::engine()
+    .lock()
+    .pairs
+    .get(symbol)
+    .map(|v| v.orders.keys().cloned().collect())
+    .unwrap_or_default()
 }
 
 #[pyfunction]
