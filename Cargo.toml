@@ -42,4 +42,4 @@ binance-rs-async = { version = "1.3.3", default-features = false, features = [
 ] }
 rocksdb = { version = "0.22.0", default-features = false, features = ["lz4"] }
 bincode = { version = "2.0.0-rc.3" }
-pyo3-polars = { version = "0.17.0", features = ["dtype-full", "lazy"] }
+# pyo3-polars = { version = "0.17.0", features = ["dtype-full", "lazy"] }

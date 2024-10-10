@@ -194,42 +194,6 @@ pub struct Candle {
   pub trades: i64,
 }
 
-/// 账户
-#[derive(Debug, Default, Clone)]
-pub struct Account {
-  /// 资金
-  pub cash: Decimal,
-  /// 可用资金
-  pub avail_cash: Decimal,
-  /// 保证金
-  pub margin: Decimal,
-  /// 未实现盈亏
-  pub pnl: Decimal,
-}
-
-/// 仓位
-#[derive(Debug, Clone)]
-pub struct Position {
-  /// 交易对
-  pub symbol: String,
-  /// 方向
-  pub side: Side,
-  /// 杠杆倍数
-  pub leverage: Decimal,
-  /// 标记价格
-  pub mark_price: Decimal,
-  /// 持仓
-  pub size: Decimal,
-  /// 可用持仓
-  pub avail_size: Decimal,
-  /// 均价
-  pub price: Decimal,
-  /// 保证金
-  pub margin: Decimal,
-  /// 未实现盈亏
-  pub pnl: Decimal,
-}
-
 /// 订单
 #[pyclass(get_all)]
 #[derive(Debug, Clone)]
@@ -264,6 +228,52 @@ pub struct Order {
   pub status: OrderStatus,
 }
 
+/// 账户
+#[derive(Debug, Default, Clone)]
+pub struct Account {
+  /// 资金
+  pub cash: Decimal,
+  /// 可用资金
+  pub available_cash: Decimal,
+  /// 保证金
+  pub margin: Decimal,
+  /// 未实现盈亏
+  pub pnl: Decimal,
+}
+
+/// 仓位
+#[derive(Debug, Clone)]
+pub struct Position {
+  /// 交易对
+  pub symbol: String,
+  /// 方向
+  pub side: Side,
+  /// 杠杆倍数
+  pub leverage: Decimal,
+  /// 标记价格
+  pub mark_price: Decimal,
+  /// 持仓
+  pub size: Decimal,
+  /// 可用持仓
+  pub available_size: Decimal,
+  /// 均价
+  pub price: Decimal,
+  /// 保证金
+  pub margin: Decimal,
+  /// 未实现盈亏
+  pub pnl: Decimal,
+}
+
+pub struct Pair {
+  pub symbol: String,
+  pub leverage: Decimal,
+  pub margin: Decimal,
+  pub mark_price: Decimal,
+  pub long: Position,
+  pub short: Position,
+  pub orders: HashMap<String, Order>,
+}
+
 /// 上下文
 pub struct Context {
   /// 数据库
@@ -276,8 +286,6 @@ pub struct Context {
   pub benchmark: String,
   /// 账户
   pub account: Account,
-  /// 仓位
-  pub positions: HashMap<String, Position>,
-  /// 订单
-  pub orders: HashMap<String, Order>,
+  /// 交易对
+  pub pairs: HashMap<String, Pair>,
 }

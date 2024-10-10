@@ -46,8 +46,7 @@ pub fn start(mode: Mode, strategy: &str) -> Result<()> {
     trade_time: Default::default(),
     benchmark: Default::default(),
     account: Default::default(),
-    positions: Default::default(),
-    orders: Default::default(),
+    pairs: Default::default(),
   };
 
   // 引擎
